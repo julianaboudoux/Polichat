@@ -14,10 +14,16 @@ conn.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 conn.bind(('0.0.0.0', PORT)) # listen on all interfaces
 conn.listen(5)
 
+with open("polichat_logo.png", "rb") as image_file:
+   BASE64_IMAGE = base64.b64encode(image_file.read()).decode('utf-8')
+
+with open("mouse.gif", "rb") as gif_file:
+    CUTE_MOUSE = base64.b64encode(gif_file.read()).decode('utf-8')
+
 print(f'Servidor ouvindo em {HOST}:{PORT}')
 
-state = {'messages':['admin: welcome to PolyChat'], 
-         'people': {'admin': {'password': 'admin', 'ip': HOST}}, 
+state = {'messages':['Admin:  Bem-vindo ao PoliChat!'], 
+         'people': {'Admin': {'password': 'Admin', 'ip': HOST}}, 
          'blocked_users': set({})}
 
 tcp_clients = []
@@ -84,7 +90,7 @@ def build_response(req, addr, state):
 
     if method == 'POST' and route == '/message':
         msg = json.loads(body)
-        state['messages'].append(f'{user}: {msg['message']}')
+        state['messages'].append(f"{user}: {msg['message']}")
 
         return 'HTTP/1.1 200 OK\r\nContent-type: application/json\r\n\r\n {}\n'.encode('utf-8')
 
@@ -92,7 +98,7 @@ def build_response(req, addr, state):
         msg = json.loads(body)
         user2ban = msg['user']
         print('ban?', user2ban)
-        if not (user2ban in state['blocked_users']) and user == 'admin':
+        if not (user2ban in state['blocked_users']) and user == 'Admin':
             state['blocked_users'].add(user2ban)
 
         return 'HTTP/1.1 200 OK\r\nContent-type: application/json\r\n\r\n {}\n'.encode('utf-8')
@@ -101,23 +107,78 @@ def build_response(req, addr, state):
 <!DOCTYPE html>
 <head>
 <meta http-equiv="refresh" content="5">
-    <title>Chat</title>
+    <title>PolyChat</title>
+    <style>
+        body {{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000000;
+        }}
+        .container {{
+            text-align: center;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 600px;
+        }}
+        img {{
+            max-width: 100%;
+            height: auto;
+        }}
+        #img2 {{
+            max-width: 20%;
+            height: auto;
+        }}
+        ul {{
+            list-style-type: none;
+            padding: 0;
+        }}
+        li {{
+            margin: 5px 0;
+        }}
+        input[type="text"] {{
+            padding: 10px;
+            width: 80%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }}
+        button {{
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }}
+        button:hover {{
+            background-color: #0056b3;
+        }}
+    </style>
 </head>
 <body>
-    <h1>Chat</h1>
-    <ul>{rendered_messages}</ul>
-    <form id="chatForm">
-        <input type="text" id="chatInput" placeholder="Type your message" required>
-        <button type="submit">Send</button>
-    </form>
-
-    <form id="reportForm">
-        <input type="text" id="reportInput" placeholder="Who deserves to be banned?" required>
-        <button type="submit">Send</button>
-    </form>
+    <div class="container">
+        <img src="data:image/png;base64,{BASE64_IMAGE}" alt="PolyChat Logo">
+        <ul>{rendered_messages}</ul>
+        <form id="chatForm">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem." required>
+            <button type="submit">Enviar</button>
+        </form>
+        <form id="reportForm">
+            <input type="text" id="reportInput" placeholder="Quem deve ser banido?" required>
+            <button type="s12ubmit">Banir</button>
+        </form>
+        <img id="img2" src="data:image/gif;base64,{CUTE_MOUSE}" alt="Mouse GIF"> 
+    </div>
     <script>{js}</script>
 </body>
 </html>
+
     \r\n\r\n
     '''.encode('utf-8')
 
