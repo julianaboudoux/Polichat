@@ -20,6 +20,8 @@ conn.listen(5)
 # Codificamos imagens que serão utilizadas
 with open("polichat_logo.png", "rb") as image_file:
    BASE64_IMAGE = base64.b64encode(image_file.read()).decode('utf-8')
+with open("side-image.png", "rb") as image_file:
+   SIDE_IMAGE= base64.b64encode(image_file.read()).decode('utf-8')
 with open("mouse.gif", "rb") as gif_file:
     CUTE_MOUSE = base64.b64encode(gif_file.read()).decode('utf-8')
 
@@ -46,7 +48,7 @@ document.getElementById('chatForm').onsubmit = function(e) {
         body: JSON.stringify({ message: document.getElementById('chatInput').value })
     })
     .then(r => r.json())
-    .then(d => { console.log('Success:', d); setTimeout(() => document.location.reload(), 10) })
+    .then(d => { console.log('Success:', d); setTimeout(() => document.location.reload(), 15) })
     .catch(err => console.error('Error:', err));
     document.getElementById('chatInput').value = '';
 };
@@ -59,7 +61,7 @@ document.getElementById('reportForm').onsubmit = function(e) {
         body: JSON.stringify({ user: document.getElementById('reportInput').value })
     })
     .then(r => r.json())
-    .then(d => { console.log('Success:', d); setTimeout(() => document.location.reload(), 10) })
+    .then(d => { console.log('Success:', d); setTimeout(() => document.location.reload(), 15) })
     .catch(err => console.error('Error:', err));
     document.getElementById('reportInput').value = '';
 };
@@ -174,7 +176,7 @@ def build_response(req, addr, state):
         button {{
             padding: 10px 15px;
             border-radius: 5px;
-            background-color: #007bff;
+            background-color: #123993;
             color: white;
             border: none;
             cursor: pointer;
@@ -185,6 +187,10 @@ def build_response(req, addr, state):
     </style>
 </head>
 <body>
+    <div class="column">
+        <img src="data:image/png;base64,{SIDE_IMAGE}" alt="Left Image">
+    </div>
+
     <div class="container">
         <img src="data:image/png;base64,{BASE64_IMAGE}" alt="PolyChat Logo">
         <ul>{rendered_messages}</ul>
@@ -197,6 +203,9 @@ def build_response(req, addr, state):
             <button type="s12ubmit">Banir</button>
         </form>
         <img id="img2" src="data:image/gif;base64,{CUTE_MOUSE}" alt="Mouse GIF"> 
+    </div>
+    <div class="column">
+        <img src="data:image/png;base64,{SIDE_IMAGE}" alt="Right Image">
     </div>
     <script>{js}</script>
 </body>
